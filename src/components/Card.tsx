@@ -58,13 +58,11 @@ export function Card({
       }}
       whileHover={!disabled && !faceUp ? { y: -6, scale: 1.03 } : undefined}
       whileTap={!disabled ? { scale: 0.96 } : undefined}
+      animate={matched ? { scale: [1, 1.08, 1] } : { scale: 1 }}
+      transition={{ duration: 0.35 }}
       data-deal={dealReveal ? 'true' : 'false'}
     >
-      <motion.div
-        className="card-inner"
-        animate={matched ? { scale: [1, 1.08, 1] } : { scale: 1 }}
-        transition={{ duration: 0.35 }}
-      >
+      <motion.div className="card-inner">
         <motion.div
           className={`card-face card-back ${patternClass}`}
           aria-hidden={faceUp}
