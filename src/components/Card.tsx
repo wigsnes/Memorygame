@@ -8,7 +8,6 @@ interface CardProps {
   matched: boolean;
   index: number;
   dealStaggerMs: number;
-  dealReveal: boolean;
   disabled: boolean;
   focused?: boolean;
   onClick: () => void;
@@ -20,14 +19,13 @@ export function Card({
   matched,
   index,
   dealStaggerMs,
-  dealReveal,
   disabled,
   focused = false,
   onClick,
 }: CardProps) {
   const patternClass = `pattern-${card.patternIndex % 8}`;
   const stateClass = [
-    faceUp ? 'flipped' : '',
+    faceUp ? 'is-face-up' : '',
     matched ? 'matched' : '',
     disabled ? 'disabled' : '',
     focused ? 'focused' : '',
@@ -36,49 +34,48 @@ export function Card({
     .join(' ');
 
   return (
-    <motion.button
-      type="button"
-      className={`card ${stateClass}`}
-      style={{ '--stagger': `${index * dealStaggerMs}ms` } as CSSProperties}
-      onClick={onClick}
-      disabled={disabled}
-      tabIndex={focused ? 0 : -1}
-      aria-label={
-        faceUp
-          ? `Card showing ${card.emoji}`
-          : `Card ${index + 1}, face down`
-      }
-      initial={{ opacity: 0, scale: 0.6, rotate: -8 }}
-      animate={
-        matched
-          ? { opacity: 1, scale: [1, 1.08, 1], rotate: 0 }
-          : { opacity: 1, scale: 1, rotate: 0 }
-      }
+    <motion.div
+      className="card-slot"
+      initial={{ opacity: 0, scale: 0.85 }}
+      animate={{ opacity: 1, scale: matched ? [1, 1.06, 1] : 1 }}
       transition={
         matched
           ? { duration: 0.35 }
-          : {
-              delay: index * 0.04,
-              type: 'spring',
-              stiffness: 260,
-              damping: 18,
-            }
+          : { delay: index * 0.04, type: 'spring', stiffness: 260, damping: 18 }
       }
-      whileHover={!disabled && !faceUp ? { y: -6, scale: 1.03 } : undefined}
-      whileTap={!disabled ? { scale: 0.96 } : undefined}
-      data-deal={dealReveal ? 'true' : 'false'}
     >
-      <motion.div className="card-inner">
+      <button
+        type="button"
+        className={`card ${stateClass}`}
+        style={{ '--stagger': `${index * dealStaggerMs}ms` } as CSSProperties}
+        onClick={onClick}
+        disabled={disabled}
+        tabIndex={focused ? 0 : -1}
+        aria-label={
+          faceUp
+            ? `Card showing ${card.emoji}`
+            : `Card ${index + 1}, face down`
+        }
+      >
         <motion.div
-          className={`card-face card-back ${patternClass}`}
-          aria-hidden={faceUp}
+          className="card-inner"
+          initial={false}
+          animate={{ rotateY: faceUp ? 180 : 0 }}
+          transition={{
+            duration: 0.55,
+            ease: [0.4, 0, 0.2, 1],
+            delay: faceUp ? 0 : parseFloat(String(index * dealStaggerMs)) / 1000,
+          }}
+          style={{ transformStyle: 'preserve-3d' }}
         >
-          <span className="card-back-gem" />
+          <div className={`card-face card-back ${patternClass}`}>
+            <span className="card-back-gem" />
+          </div>
+          <div className="card-face card-front" aria-hidden={!faceUp}>
+            <span className="card-emoji">{card.emoji}</span>
+          </div>
         </motion.div>
-        <div className="card-face card-front" aria-hidden={!faceUp}>
-          <span className="card-emoji">{card.emoji}</span>
-        </div>
-      </motion.div>
-    </motion.button>
+      </button>
+    </motion.div>
   );
 }

@@ -420,7 +420,6 @@ function App() {
         cards={game.cards}
         cols={game.cols}
         matchedIds={game.matchedIds}
-        dealReveal={game.dealReveal}
         dealStaggerMs={game.dealStaggerMs}
         mismatchShake={game.mismatchShake}
         phase={game.phase}

@@ -6,7 +6,6 @@ interface BoardProps {
   cards: CardData[];
   cols: number;
   matchedIds: Set<string>;
-  dealReveal: boolean;
   dealStaggerMs: number;
   mismatchShake: boolean;
   phase: string;
@@ -19,7 +18,6 @@ export function Board({
   cards,
   cols,
   matchedIds,
-  dealReveal,
   dealStaggerMs,
   mismatchShake,
   phase,
@@ -55,7 +53,6 @@ export function Board({
             matched={matched}
             index={index}
             dealStaggerMs={dealStaggerMs}
-            dealReveal={dealReveal}
             disabled={disabled}
             focused={index === focusedIndex}
             onClick={() => onFlip(card.id)}
