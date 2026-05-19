@@ -1,0 +1,181 @@
+import type { EmojiTheme } from '../types/game';
+import { shuffle } from '../utils/shuffle';
+import type { Rng } from '../utils/seededRandom';
+import { pickSeeded } from '../utils/seededRandom';
+
+export type EmojiCategory = 'animals' | 'food' | 'objects' | 'faces';
+
+export interface EmojiEntry {
+  emoji: string;
+  category: EmojiCategory;
+}
+
+export const EMOJI_POOL: EmojiEntry[] = [
+  { emoji: '🐶', category: 'animals' },
+  { emoji: '🐱', category: 'animals' },
+  { emoji: '🐭', category: 'animals' },
+  { emoji: '🐹', category: 'animals' },
+  { emoji: '🐰', category: 'animals' },
+  { emoji: '🦊', category: 'animals' },
+  { emoji: '🐻', category: 'animals' },
+  { emoji: '🐼', category: 'animals' },
+  { emoji: '🐨', category: 'animals' },
+  { emoji: '🐯', category: 'animals' },
+  { emoji: '🦁', category: 'animals' },
+  { emoji: '🐮', category: 'animals' },
+  { emoji: '🐷', category: 'animals' },
+  { emoji: '🐸', category: 'animals' },
+  { emoji: '🐵', category: 'animals' },
+  { emoji: '🐔', category: 'animals' },
+  { emoji: '🐧', category: 'animals' },
+  { emoji: '🐦', category: 'animals' },
+  { emoji: '🦆', category: 'animals' },
+  { emoji: '🦅', category: 'animals' },
+  { emoji: '🦉', category: 'animals' },
+  { emoji: '🦇', category: 'animals' },
+  { emoji: '🐺', category: 'animals' },
+  { emoji: '🐴', category: 'animals' },
+  { emoji: '🦄', category: 'animals' },
+  { emoji: '🐝', category: 'animals' },
+  { emoji: '🐛', category: 'animals' },
+  { emoji: '🦋', category: 'animals' },
+  { emoji: '🐌', category: 'animals' },
+  { emoji: '🐙', category: 'animals' },
+  { emoji: '🦑', category: 'animals' },
+  { emoji: '🦀', category: 'animals' },
+  { emoji: '🐠', category: 'animals' },
+  { emoji: '🐟', category: 'animals' },
+  { emoji: '🐬', category: 'animals' },
+  { emoji: '🐳', category: 'animals' },
+  { emoji: '🦈', category: 'animals' },
+  { emoji: '🐊', category: 'animals' },
+  { emoji: '🐢', category: 'animals' },
+  { emoji: '🦎', category: 'animals' },
+  { emoji: '🍎', category: 'food' },
+  { emoji: '🍐', category: 'food' },
+  { emoji: '🍊', category: 'food' },
+  { emoji: '🍋', category: 'food' },
+  { emoji: '🍌', category: 'food' },
+  { emoji: '🍉', category: 'food' },
+  { emoji: '🍇', category: 'food' },
+  { emoji: '🍓', category: 'food' },
+  { emoji: '🫐', category: 'food' },
+  { emoji: '🍒', category: 'food' },
+  { emoji: '🍑', category: 'food' },
+  { emoji: '🥭', category: 'food' },
+  { emoji: '🍍', category: 'food' },
+  { emoji: '🥥', category: 'food' },
+  { emoji: '🥝', category: 'food' },
+  { emoji: '🍅', category: 'food' },
+  { emoji: '🥑', category: 'food' },
+  { emoji: '🌽', category: 'food' },
+  { emoji: '🥕', category: 'food' },
+  { emoji: '🍕', category: 'food' },
+  { emoji: '🍔', category: 'food' },
+  { emoji: '🌭', category: 'food' },
+  { emoji: '🍟', category: 'food' },
+  { emoji: '🌮', category: 'food' },
+  { emoji: '🌯', category: 'food' },
+  { emoji: '🥗', category: 'food' },
+  { emoji: '🍝', category: 'food' },
+  { emoji: '🍜', category: 'food' },
+  { emoji: '🍣', category: 'food' },
+  { emoji: '🍱', category: 'food' },
+  { emoji: '🍩', category: 'food' },
+  { emoji: '🍪', category: 'food' },
+  { emoji: '🎂', category: 'food' },
+  { emoji: '🍰', category: 'food' },
+  { emoji: '🧁', category: 'food' },
+  { emoji: '🍦', category: 'food' },
+  { emoji: '🍫', category: 'food' },
+  { emoji: '🍿', category: 'food' },
+  { emoji: '⚽', category: 'objects' },
+  { emoji: '🏀', category: 'objects' },
+  { emoji: '🏈', category: 'objects' },
+  { emoji: '⚾', category: 'objects' },
+  { emoji: '🎾', category: 'objects' },
+  { emoji: '🏐', category: 'objects' },
+  { emoji: '🎱', category: 'objects' },
+  { emoji: '🎮', category: 'objects' },
+  { emoji: '🕹️', category: 'objects' },
+  { emoji: '🎯', category: 'objects' },
+  { emoji: '🎲', category: 'objects' },
+  { emoji: '🧩', category: 'objects' },
+  { emoji: '🎸', category: 'objects' },
+  { emoji: '🎹', category: 'objects' },
+  { emoji: '🎺', category: 'objects' },
+  { emoji: '🎻', category: 'objects' },
+  { emoji: '🥁', category: 'objects' },
+  { emoji: '🎨', category: 'objects' },
+  { emoji: '🖌️', category: 'objects' },
+  { emoji: '✏️', category: 'objects' },
+  { emoji: '📚', category: 'objects' },
+  { emoji: '🔑', category: 'objects' },
+  { emoji: '💎', category: 'objects' },
+  { emoji: '🔮', category: 'objects' },
+  { emoji: '🎁', category: 'objects' },
+  { emoji: '🎈', category: 'objects' },
+  { emoji: '🎀', category: 'objects' },
+  { emoji: '👑', category: 'objects' },
+  { emoji: '⭐', category: 'objects' },
+  { emoji: '🌙', category: 'objects' },
+  { emoji: '☀️', category: 'objects' },
+  { emoji: '🌈', category: 'objects' },
+  { emoji: '🔥', category: 'objects' },
+  { emoji: '💧', category: 'objects' },
+  { emoji: '🚀', category: 'objects' },
+  { emoji: '🛸', category: 'objects' },
+  { emoji: '😀', category: 'faces' },
+  { emoji: '😃', category: 'faces' },
+  { emoji: '😄', category: 'faces' },
+  { emoji: '😁', category: 'faces' },
+  { emoji: '😆', category: 'faces' },
+  { emoji: '🥹', category: 'faces' },
+  { emoji: '😅', category: 'faces' },
+  { emoji: '🤣', category: 'faces' },
+  { emoji: '😂', category: 'faces' },
+  { emoji: '🙂', category: 'faces' },
+  { emoji: '😉', category: 'faces' },
+  { emoji: '😊', category: 'faces' },
+  { emoji: '😍', category: 'faces' },
+  { emoji: '🥰', category: 'faces' },
+  { emoji: '😘', category: 'faces' },
+  { emoji: '😎', category: 'faces' },
+  { emoji: '🤩', category: 'faces' },
+  { emoji: '🤔', category: 'faces' },
+  { emoji: '😴', category: 'faces' },
+  { emoji: '🤯', category: 'faces' },
+  { emoji: '🥳', category: 'faces' },
+  { emoji: '😇', category: 'faces' },
+  { emoji: '🤠', category: 'faces' },
+  { emoji: '🥸', category: 'faces' },
+  { emoji: '😈', category: 'faces' },
+  { emoji: '👻', category: 'faces' },
+  { emoji: '💀', category: 'faces' },
+  { emoji: '🤖', category: 'faces' },
+  { emoji: '👽', category: 'faces' },
+];
+
+export function getCategory(emoji: string): EmojiCategory {
+  return EMOJI_POOL.find((e) => e.emoji === emoji)?.category ?? 'objects';
+}
+
+export function pickPairs(
+  count: number,
+  theme: EmojiTheme = 'random',
+  rng?: Rng,
+): string[] {
+  let pool = EMOJI_POOL;
+  if (theme !== 'random') {
+    pool = EMOJI_POOL.filter((e) => e.category === theme);
+  }
+  if (pool.length < count) {
+    pool = EMOJI_POOL;
+  }
+  if (rng) {
+    return pickSeeded(pool, count, rng).map((e) => e.emoji);
+  }
+  return shuffle(pool)
+    .slice(0, count)
+    .map((e) => e.emoji);
+}
