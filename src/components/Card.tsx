@@ -49,17 +49,23 @@ export function Card({
           : `Card ${index + 1}, face down`
       }
       initial={{ opacity: 0, scale: 0.6, rotate: -8 }}
-      animate={{ opacity: 1, scale: 1, rotate: 0 }}
-      transition={{
-        delay: index * 0.04,
-        type: 'spring',
-        stiffness: 260,
-        damping: 18,
-      }}
+      animate={
+        matched
+          ? { opacity: 1, scale: [1, 1.08, 1], rotate: 0 }
+          : { opacity: 1, scale: 1, rotate: 0 }
+      }
+      transition={
+        matched
+          ? { duration: 0.35 }
+          : {
+              delay: index * 0.04,
+              type: 'spring',
+              stiffness: 260,
+              damping: 18,
+            }
+      }
       whileHover={!disabled && !faceUp ? { y: -6, scale: 1.03 } : undefined}
       whileTap={!disabled ? { scale: 0.96 } : undefined}
-      animate={matched ? { scale: [1, 1.08, 1] } : { scale: 1 }}
-      transition={{ duration: 0.35 }}
       data-deal={dealReveal ? 'true' : 'false'}
     >
       <motion.div className="card-inner">
