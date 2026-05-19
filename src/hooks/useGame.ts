@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { getCategory, pickPairs } from '../data/emojis';
+import { getCategory } from '../data/emojis';
 import { randomQuip } from '../data/phrases';
+import { buildBoard, getBoardSeed } from '../game/board';
 import type {
-  CardData,
   DifficultyId,
   EmojiTheme,
   GameMode,
@@ -12,12 +12,7 @@ import type {
 } from '../types/game';
 import { DIFFICULTIES } from '../types/game';
 import { burstMatch } from '../utils/confetti';
-import {
-  createRng,
-  dailySeed,
-  shuffleSeeded,
-  type Rng,
-} from '../utils/seededRandom';
+import { dailySeed } from '../utils/seededRandom';
 import { playSound } from '../utils/sounds';
 import { shuffle } from '../utils/shuffle';
 
@@ -27,30 +22,6 @@ const DEAL_STAGGER_MS = 40;
 const PEEK_MS = 1200;
 const FLASH_MS = 400;
 
-function buildBoard(
-  pairCount: number,
-  theme: EmojiTheme,
-  seed?: string,
-): CardData[] {
-  const rng: Rng | undefined = seed ? createRng(seed) : undefined;
-  const emojis = pickPairs(pairCount, theme, rng);
-  const pairs = emojis.flatMap((emoji, i) => [
-    { emoji, patternIndex: i * 2 },
-    { emoji, patternIndex: i * 2 + 1 },
-  ]);
-  const shuffled = rng ? shuffleSeeded(pairs, rng) : shuffle(pairs);
-  return shuffled.map((card, index) => ({
-    id: `card-${index}-${card.emoji}`,
-    emoji: card.emoji,
-    patternIndex: card.patternIndex % 8,
-  }));
-}
-
-function boardSeed(mode: GameMode, diffId: DifficultyId, theme: EmojiTheme): string | undefined {
-  if (mode === 'daily') return `${dailySeed()}-${diffId}-${theme}`;
-  return undefined;
-}
-
 export function useGame() {
   const [gameMode, setGameMode] = useState<GameMode>('solo');
   const [difficultyId, setDifficultyId] = useState<DifficultyId>('easy');
@@ -58,7 +29,7 @@ export function useGame() {
   const difficulty =
     DIFFICULTIES.find((d) => d.id === difficultyId) ?? DIFFICULTIES[0];
 
-  const [cards, setCards] = useState<CardData[]>(() =>
+  const [cards, setCards] = useState(() =>
     buildBoard(difficulty.pairCount, theme),
   );
   const [phase, setPhase] = useState<GamePhase>('dealing');
@@ -164,7 +135,7 @@ export function useGame() {
       if (newTheme) setTheme(newTheme);
       if (newMode) setGameMode(newMode);
 
-      const seed = boardSeed(mode, diff.id, t);
+      const seed = getBoardSeed(mode, diff.id, t);
       setCards(buildBoard(diff.pairCount, t, seed));
       setPhase('dealing');
       setFlippedIds([]);
@@ -201,6 +172,11 @@ export function useGame() {
     },
     [pairsToWin],
   );
+
+  useEffect(() => {
+    startDealAnimation(difficulty.pairCount * 2);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- initial deal only
+  }, []);
 
   useEffect(() => {
     return () => {
